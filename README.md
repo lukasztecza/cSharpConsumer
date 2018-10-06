@@ -4,7 +4,7 @@ Sample c# consumer dev playground
 ### Usage
 - clone repo and run vagrant up
 - ssh to machine and go to `/vagrant`
-- launch rabbitmq ui at `localhost:15672`
+- launch rabbitmq ui in your browser at `localhost:15672`
 - go to Consumer directory and run `dotnet run` -> it will create exchange and a queue and listen for messages
 - go to Producer directory and run `dotnet run` -> follow instructions to publish message
 
