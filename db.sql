@@ -1,8 +1,14 @@
-CREATE TABLE IF NOT EXISTS `sample` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) COLLATE utf8_general_ci NOT NULL,
-    `type` TINYINT(4) NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY (`name`),
-    KEY (`type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE DATABASE TestBI
+GO
+USE TestBI
+
+CREATE TABLE InovioTransaction (
+    ID int IDENTITY(1,1) PRIMARY KEY,
+    Type varchar(255),
+    CustomerId int,
+    CreatedAt datetime,
+    INDEX CUSTOMER_ID_INDEX (CustomerId)
+)
+GO
+
+QUIT

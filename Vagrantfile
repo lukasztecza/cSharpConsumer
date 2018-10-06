@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 15672, host: 15672
   config.vm.synced_folder ".", "/vagrant", :owner=> 'www-data', :group=>'vagrant', :mount_options => ["dmode=775","fmode=664"]
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--memory", "1024"]
+    vb.customize ["modifyvm", :id, "--memory", "2304"]
   end
   config.vm.provision :shell, path: "./bootstrap.sh"
 end
