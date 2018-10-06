@@ -9,7 +9,7 @@ Sample c# consumer dev playground
 - go to Producer directory and run `dotnet run` -> follow instructions to publish message
 
 ### Tips
-For this to work you need to run in both apps the following
+For this to work following packages were included in both Consumer and Producer
 ```
 dotnet add package RabbitMQ.Client
 dotnet add package Newtonsoft.Json
