@@ -35,6 +35,8 @@ source ~/.bashrc
 ```
 Show databases
 ```
+CREATE DATABASE TestDB
+GO
 SELECT Name from sys.Databases
 GO
 ```
