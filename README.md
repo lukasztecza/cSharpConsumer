@@ -1,5 +1,5 @@
 # cSharpConsumer
-Sample c# consumer
+Sample c# consumer dev playground
 
 ### Usage
 - clone repo and run vagrant up
