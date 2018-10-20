@@ -1,25 +1,45 @@
 # cSharpConsumer
-Sample c# consumer dev playground
+sample c# consumer for bi system
 
-### Usage
-- clone repo and run vagrant up
-- ssh to machine and go to `/vagrant`
-- launch rabbitmq ui in your browser at `localhost:15672`
-- go to Consumer directory and run `dotnet run` -> it will create exchange and a queue and listen for messages
-- go to Producer directory and run `dotnet run` -> follow instructions to publish message
-
-### Tips
-For this to work following packages were included in both Consumer and Producer
+### Dev usage
+- install [virtualbox](https://www.virtualbox.org) and [vagrant](https://www.vagrantup.com/) 
+- clone repo and run `vagrant up` in projects directory - this will pull images and build an environment
+- restart machine -> run `vagrant halt` and then `vagrant up` -> or run `vagrant reload`
+- you can ssh to machine using `vagrant ssh`
+- files where Vagrantfile lives are mapped to `/vagrant` directory inside machine
+- you can launch rabbitmq ui in your browser at `localhost:15672` - username is test and password is test
+- ssh to machine and go to `/vagrant/Consumer` directory inside virtual machine and start the consumer
 ```
-dotnet add package RabbitMQ.Client
-dotnet add package Newtonsoft.Json
+vagrant ssh
+cd /vagrant/Consumer
+dotnet run
 ```
-Remember to run after changes before `dotnet run` as some caching magic happens
+- ssh to machine and go to `/vagrant/Producer` directory inside virtual machine and try to publish message
+```
+vagrant ssh
+cd /vagrant/Producer
+dotnet run
+```
+- follow instructions to publish message for instance to publish 5 messages with routing key `analytics.Sessions` with payload taken from `sessions.json` file run
+```
+dotnet run 5 sessions
+```
+- if message has routing key `analytics.Sessions` consumer will try to use class Sessions under BiStorage namespace for handling
+- you can find event handlers in `Consumer/BiStorage/EventHandlers` directory
+- remember to clean builds after changes in code before running `dotnet run`
 ```
 dotnet clean
 ```
 
-### Sql
+### Used packages
+For this to work following packages were included in Consumer and Producer
+```
+dotnet add package RabbitMQ.Client
+dotnet add package Newtonsoft.Json
+dotnet add package System.Data.SqlClient
+```
+
+### Sql from inside machine
 Show sql server status
 ```
 systemctl status mssql-server
@@ -40,7 +60,7 @@ GO
 SELECT Name from sys.Databases
 GO
 ```
-Use `test_db` database and create `Inventory` table and insert sample row
+Use `TestDB` database and create `Inventory` table and insert sample row
 ```
 USE TestDB;
 CREATE TABLE Inventory (id INT, name NVARCHAR(50), quantity INT);
@@ -57,11 +77,16 @@ Select from table
 SELECT * FROM Inventory WHERE quantity > 152;
 GO
 ```
+Drop databse
+```
+DROP DATABASE TestDB
+GO
+```
 Exit
 ```
 QUIT
 ```
 You can execute sql file in db using
 ```
-/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'MSSQLadmin!' < db.sql
+/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'MSSQLadmin!' < somefile.sql
 ```

@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
-using RabbitMQ.Client;
+using System;
 using System.Text;
 using Newtonsoft.Json;
-using System.Collections.Generic;
+using RabbitMQ.Client;
+using System.Text.RegularExpressions;
 
 namespace Producer
 {
@@ -11,52 +10,60 @@ namespace Producer
     {
         public static void Main(string[] args)
         {
-            var factory = new ConnectionFactory();
-            factory.HostName = "localhost";
-            factory.UserName = "test";
-            factory.Password = "test";
-            string exchangeName = "analytics_test_exchange";
+            string parametersFileName = "../Consumer/parameters.json";
+            if (System.IO.File.Exists(parametersFileName)) {
+                string jsonParameters = System.IO.File.ReadAllText(parametersFileName);
+                dynamic parameters = JsonConvert.DeserializeObject<dynamic>(jsonParameters);
 
-            using(var connection = factory.CreateConnection()) 
-            {
-                using(var channel = connection.CreateModel())
+                ConnectionFactory factory = new ConnectionFactory();
+                factory.HostName = parameters.messageBrokerHost.ToString();
+                factory.Port = parameters.messageBrokerPort.ToObject<int>();
+                factory.VirtualHost = parameters.messageBrokerVHost.ToString();
+                factory.UserName = parameters.messageBrokerUser.ToString();
+                factory.Password = parameters.messageBrokerPassword.ToString();
+                string exchangeName = parameters.messageBrokerExchangeName.ToString();
+
+                using(var connection = factory.CreateConnection())
                 {
-                    channel.ExchangeDeclare(
-                        exchange: exchangeName,
-                        type: "topic"
-                    );
+                    using(var channel = connection.CreateModel())
+                    {
+                        channel.ExchangeDeclare(
+                            exchange: exchangeName,
+                            durable: true,
+                            type: "topic"
+                        );
 
-                    if (args.Length < 2) {
-                        Console.WriteLine("Need at least 2 arguments: routing_key message");
+                        string routingKey = "";
+                        string message = "";
+                        int messageCount = 0;
+                        if (args.Length == 2) {
+                            string fileName = Regex.Replace(args[1], @"[^a-zA-Z0-9]", "") + ".json";
+                            if (System.IO.File.Exists(fileName)) {
+                                routingKey = "analytics." + args[1].First().ToString().ToUpper() + args[1].Substring(1);
+                                message = System.IO.File.ReadAllText(fileName);
+                                messageCount = Int32.Parse(args[0]);
+                            } else {
+                                Console.WriteLine("Ensure that {0} file exists and contains message sample", fileName);
+                            }
+                        } else {
+                            Console.WriteLine("Need 2 arguments: messageCount eventName");
 
-                        return;
+                            return;
+                        }
+
+                        byte[] body = Encoding.UTF8.GetBytes(message);
+                        for (int i = 0; i < messageCount; i++) {
+                            channel.BasicPublish(
+                                exchange: exchangeName,
+                                routingKey: routingKey,
+                                basicProperties: null,
+                                body: body
+                            );
+                            Console.WriteLine(" [x] Sent '{0}':'{1}'", routingKey, message);
+                        }
                     }
-
-                    var routingKey = args[0];
-                    var message = getMessage(args);
-
-                    var body = Encoding.UTF8.GetBytes(message);
-                    channel.BasicPublish(
-                        exchange: exchangeName,
-                        routingKey: routingKey,
-                        basicProperties: null,
-                        body: body
-                    );
-                    Console.WriteLine(" [x] Sent '{0}':'{1}'", routingKey, message);
                 }
             }
-        }
-
-        private static string getMessage(string [] args)
-        {
-            var arr = args.Skip(1).ToArray();
-            Dictionary<string, string> payload = new Dictionary<string, string>();
-            for (int i = 0; i < arr.Length - 1; i += 2)
-            {
-                payload.Add(arr[i], arr[i + 1]);
-            }
-
-            return JsonConvert.SerializeObject(payload);
         }
     }
 }

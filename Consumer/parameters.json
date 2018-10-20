@@ -1,0 +1,20 @@
+{
+    "logStack": true,
+
+    "databaseHost": "localhost",
+    "databasePort": 1433,
+    "databaseName": "TestBI",
+    "databaseUser": "SA",
+    "databasePassword": "MSSQLadmin!",
+
+    "messageBrokerHost": "localhost",
+    "messageBrokerPort": 5672,
+    "messageBrokerVHost": "/analytics",
+    "messageBrokerUser": "test",
+    "messageBrokerPassword": "test",
+    "messageBrokerExchangeName": "analytics_exchange",
+    "messageBrokerQueueName": "analytics_queue",
+    "messageBrokerBinding": "analytics.*",
+    "messageBrokerMaxRetries": 3,
+    "messageBrokerFailMessageHoldingTime": 30
+}
