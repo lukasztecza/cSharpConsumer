@@ -16,5 +16,5 @@
     "messageBrokerQueueName": "analytics_queue",
     "messageBrokerBinding": "analytics.*",
     "messageBrokerMaxRetries": 3,
-    "messageBrokerFailMessageHoldingTime": 30
+    "messageBrokerFailMessageHoldingTime": 10000
 }

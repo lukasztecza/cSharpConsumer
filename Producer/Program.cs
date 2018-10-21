@@ -39,7 +39,7 @@ namespace Producer
                         if (args.Length == 2) {
                             string fileName = Regex.Replace(args[1], @"[^a-zA-Z0-9]", "") + ".json";
                             if (System.IO.File.Exists(fileName)) {
-                                routingKey = "analytics." + args[1].First().ToString().ToUpper() + args[1].Substring(1);
+                                routingKey = "analytics." + char.ToUpper(args[1][0]) + args[1].Substring(1);
                                 message = System.IO.File.ReadAllText(fileName);
                                 messageCount = Int32.Parse(args[0]);
                             } else {

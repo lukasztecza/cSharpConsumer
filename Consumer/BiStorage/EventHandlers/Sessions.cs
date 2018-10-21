@@ -15,9 +15,11 @@ namespace BiStorage
             this.logger().logMessage(string.Format("Handling message in {0} event handler", this.GetType().Name));
             dynamic message = JsonConvert.DeserializeObject<dynamic>(jsonMessage);
 
+//message.session_id = this.getRandom(32); //for dev testing
+
             // if we already have this session id we can ignore the message
             List<Dictionary<string, string>> sessions = this.db().fetch(
-                "SELECT SessionId FROM Sessions WHERE SessionId = @sessionId",
+                "SELECT Id FROM Sessions WHERE Id = @sessionId",
                 new Dictionary<string, string>() {
                     {"sessionId", message.session_id.ToString()}
                 }
@@ -84,7 +86,11 @@ namespace BiStorage
                 return false;
 
             }
-            this.logger().logMessage(string.Format("Message processed in {0} event handler", this.GetType().Name));
+            this.logger().logMessage(string.Format(
+                "Message processed for session id {0} in {1} event handler",
+                message.session_id.ToString(),
+                this.GetType().Name
+            ));
 
             return true;
         }

@@ -18,13 +18,12 @@ GO
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'Sessions' and xtype='U')
 CREATE TABLE Sessions (
-    Id varchar(256), PRIMARY KEY,
+    Id varchar(64) PRIMARY KEY,
     AffiliateId int FOREIGN KEY REFERENCES Affiliates(Id),
     CampaignId varchar(64),
     Ip varchar(15),
     SiteName varchar(32),
     CreationDate datetimeoffset,
-    CONSTRAINT UniqueConstraint_Sessions_SessionId UNIQUE (SessionId),
     INDEX Index_Sessions_AffiliateId NONCLUSTERED (AffiliateId),
     INDEX Index_Sessions_CampaignId NONCLUSTERED (CampaignId),
     INDEX Index_Sessions_CreationDate NONCLUSTERED (CreationDate)
@@ -38,8 +37,8 @@ CREATE TABLE Registrations (
     UserName varchar(32),
     Email varchar(256),
     SiteName varchar(32),
-    SessionId int FOREIGN KEY REFERENCES Sessions(Id),
-    Ip varchar(15), /* may be different than in session */
+    SessionId varchar(64) FOREIGN KEY REFERENCES Sessions(Id),
+    Ip varchar(15),
     CreationDate datetimeoffset,
     CONSTRAINT UniqueConstraint_Registrations_UserName_SiteName_CreationDate UNIQUE (UserName, SiteName, CreationDate),
     INDEX Index_Registrations_CreationDate NONCLUSTERED (CreationDate)

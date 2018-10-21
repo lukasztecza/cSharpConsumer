@@ -4,10 +4,10 @@ namespace LogsStorage
 {
     class LogsManager : LogsManagerInterface
     {
-        private logStack;
+        private bool logStack;
 
         public LogsManager(
-             string logStack = false
+             bool logStack
         ) {
             this.logStack = logStack;
         }

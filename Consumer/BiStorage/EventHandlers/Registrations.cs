@@ -15,6 +15,8 @@ namespace BiStorage
             this.logger().logMessage(string.Format("Handling message in {0} event handler", this.GetType().Name));
             dynamic message = JsonConvert.DeserializeObject<dynamic>(jsonMessage);
 
+//message.user_name = this.getRandom(32); //for dev testing
+
             // if we already have registration for this username at this site at that datetime we can ignore the message
             List<Dictionary<string, string>> registrations = this.db().fetch(
                 @"
@@ -40,7 +42,7 @@ namespace BiStorage
 
             // find internal session id for passed session identifier
             List<Dictionary<string, string>> sessions = this.db().fetch(
-                "SELECT Id FROM Sessions WHERE SessionId = @sessionId",
+                "SELECT Id FROM Sessions WHERE Id = @sessionId",
                 new Dictionary<string, string>() {
                     {"sessionId", message.session_id.ToString()}
                 }
@@ -73,15 +75,22 @@ namespace BiStorage
             );
             if (insertedRegistrations != 1) {
                 this.logger().logMessage(string.Format(
-                    "Could not insert registration record for session id {0} in {1} event handler",
-                    message.session_id.ToString(),
+                    "Could not insert registration record for user name {0} and site name {1} and creation date {2} in {3} event handler",
+                    message.user_name.ToString(),
+                    message.site_name.ToString(),
+                    message.creation_date.ToString(),
                     this.GetType().Name
                 ));
 
                 return false;
-
             }
-            this.logger().logMessage(string.Format("Message processed in {0} event handler", this.GetType().Name));
+            this.logger().logMessage(string.Format(
+                "Message processed for user name {0} and site name {1} and creation date {2} in {3} event handler",
+                message.user_name.ToString(),
+                message.site_name.ToString(),
+                message.creation_date.ToString(),
+                this.GetType().Name
+            ));
 
             return true;
         }
